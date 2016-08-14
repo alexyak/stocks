@@ -93,7 +93,7 @@ Module.register("stocks", {
     getStocks: function () {
 
         var self = this;
-        var url = 'http://finance.google.com/finance/info?client=ig&q=' + this.defaults.stocks;
+        var url = 'http://finance.google.com/finance/info?client=ig&q=' + this.config.stocks;
 
         var request = new XMLHttpRequest();
         request.open("GET", url, true);
@@ -101,7 +101,7 @@ Module.register("stocks", {
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
                 if (this.status === 200) {
-                    self.result = JSON.parse(this.response.substring(3, this.response.length));
+                    self.result = JSON.parse(this.response.substring(3, this.config.length));
                     self.updateDom(self.config.fadeSpeed);
                 }
             }
