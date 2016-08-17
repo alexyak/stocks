@@ -101,7 +101,7 @@ Module.register("stocks", {
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
                 if (this.status === 200) {
-                    self.result = JSON.parse(this.response.substring(3, this.config.length));
+                    self.result = JSON.parse(this.response.substring(3, this.response.length));
                     self.updateDom(self.config.fadeSpeed);
                 }
             }
