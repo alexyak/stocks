@@ -91,22 +91,16 @@ Module.register("stocks", {
     },
 
     getStocks: function () {
-
-        var self = this;
         var url = 'http://finance.google.com/finance/info?client=ig&q=' + this.config.stocks;
+        this.sendSocketNotification('GET_STOCKS', url);
+    },
 
-        var request = new XMLHttpRequest();
-        request.open("GET", url, true);
-        
-        request.onreadystatechange = function () {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-                    self.result = JSON.parse(this.response.substring(3, this.response.length));
-                    self.updateDom(self.config.fadeSpeed);
-                }
-            }
-        }
-        request.send(null);
+
+    socketNotificationReceived: function(notification, payload) {
+        if (notification === "STOCKS_RESULT") {
+            this.result = payload;
+            this.updateDom(self.config.fadeSpeed);
+        }    
     },
 
 });
