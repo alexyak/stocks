@@ -7,8 +7,8 @@ Module.register("stocks", {
     result: [],
 	// Default module config.
 	defaults: {
-		stocks: '.DJI,MSFT,AAPL,GOOG,INTC,CICS,TSLA,FB',
-        updateInterval: 37000
+		stocks: 'MSFT,AAPL,GOOG,INTC',
+        updateInterval: 60000
 	},
 
     getStyles: function() {
@@ -25,25 +25,24 @@ Module.register("stocks", {
 
         var wrapper = document.createElement("marquee");
         wrapper.className = 'medium bright';
-        
-        var count = 0;
 
+        var count = 0;
         var _this = this;
 
         if (this.result.length > 0){
             this.result.forEach(function(stock) {
                 var symbolElement =  document.createElement("span");
-                var symbol = stock.t;
-                var lastPrice = stock.l;
-                var changePercentage = stock.cp;
-                var lastClosePrice = stock.pcls_fix;
-                var lastPriceFix = stock.l_fix;
+                var symbol = stock.symbol;
+                var lastPrice = stock.latestPrice;
+                var changePercentage = stock.changePercent;
+                var changeValue = stock.change;
+                var lastClosePrice = stock.close;
+                var lastPriceFix = stock.latestPrice;
 
                 symbolElement.innerHTML = symbol + ' '; 
                 wrapper.appendChild(symbolElement);
 
                 var priceElement = document.createElement("span");
-
                 priceElement.innerHTML = lastPrice;
 
                 var changeElement = document.createElement("span");
@@ -52,9 +51,9 @@ Module.register("stocks", {
                 else 
                     changeElement.className = "down";
 
-                var change = Math.round(Math.abs(lastPriceFix - lastClosePrice), -2);
+                var change = Math.abs(changeValue, -2);
 
-                changeElement.innerHTML = " " + _this.roundValue(Math.abs(lastPriceFix - lastClosePrice));
+                changeElement.innerHTML = " " + change;
 
                 var divider = document.createElement("span"); 
                 
@@ -62,9 +61,7 @@ Module.register("stocks", {
                     divider.innerHTML = '  •  ';
 
                 wrapper.appendChild(priceElement);
-
                 wrapper.appendChild(changeElement);
-
                 wrapper.appendChild(divider);
                 count++;
             });
@@ -91,8 +88,18 @@ Module.register("stocks", {
     },
 
     getStocks: function () {
-        var url = 'http://finance.google.com/finance/info?client=ig&q=' + this.config.stocks;
-        this.sendSocketNotification('GET_STOCKS', url);
+        var url = "https://api.iextrading.com/1.0/stock/" //aapl/quote";
+
+        var requestUrls = [];
+        var stocksArray = this.config.stocks.split(',');
+
+        stocksArray.forEach(function(stock) {
+            var requestUrl = url + stock + "/quote";
+            requestUrls.push(requestUrl);
+        });
+
+        this.sendSocketNotification('GET_STOCKS_MULTI', requestUrls);
+        
     },
 
 
